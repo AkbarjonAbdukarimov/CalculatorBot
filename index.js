@@ -1,57 +1,44 @@
 const TelegramBot = require("node-telegram-bot-api");
 const token = "5324276175:AAFvKOWd4TU_B7iJbms8xGKz52A-klxmKVw";
+const fs = require("fs");
+const axios = require("axios");
 const bot = new TelegramBot(token, { polling: true });
-let nums = [];
+const getUsdPrice = async () => {
+  const res = await axios.get("https://nbu.uz/exchange-rates/json/");
+  const usd = res.data.find((i) => i.code === "USD");
+  return usd.nbu_buy_price;
+};
+let exchange = JSON.parse(fs.readFileSync("exchange.json"));
 bot.setMyCommands([
   { command: "/start", description: "Начальное приветствие" },
+  { command: "/calculate", description: "Начать Калькуляцию" },
 ]);
-
-const options = {
-  reply_markup: JSON.stringify({
-    inline_keyboard: [[{ text: "Начать расчет", callback_data: "calculate" }]],
-  }),
-};
-
 bot.on("message", (msg) => {
-  const { text } = msg;
-  const chatId = msg.chat.id;
-
-  switch (text) {
-    case "/start":
-      bot.sendMessage(
-        chatId,
-        "Добро пожаловать! Простой бот-калькулятор комиссий! Пожалуйста, нажмите кнопку «Начать расчет», чтобы начать",
-        options
-      );
-      break;
-  }
+  const { message_id, text, chat } = msg;
+  if (text === "/start")
+    switch (text) {
+      case "/start":
+        bot.sendMessage(chat.id, "Welcome to Calculator bot");
+        break;
+      case "/calculate":
+        bot.sendMessage(chat.id, "Введите значение:");
+        break;
+      case token:
+        bot.sendMessage(chat.id, "Введите Курс Юани:");
+        bot.on("message", (msg) => {
+          if (message_id + 2 === msg.message_id) {
+            bot.sendMessage(
+              chat.id,
+              `Курс был изменен с ${exchange.price} на ${msg.text}`
+            );
+            exchange.price = Number(msg.text);
+            fs.writeFileSync("exchange.json", JSON.stringify(exchange));
+            return;
+          }
+          return;
+        });
+        break;
+      // default:
+      //   bot.sendMessage(chat.id, "Command not found");
+    }
 });
-bot.on("callback_query", async (cbq) => {
-  await onCallbackQuery(cbq);
-  bot.on("message", (msg) => {
-    const { text } = msg;
-    nums = text.split(",").map((i) => {
-      return Number(i.trim());
-    });
-    const amount = nums[0];
-    const exchange = nums[1];
-    const commision = nums[3] / 100;
-    const usd = nums[2];
-    const result = (
-      (amount * usd * (1 + commision)) /
-      exchange
-    ).toLocaleString();
-    bot.sendMessage(msg.chat.id, result.toLocaleString("RU-ru"));
-  });
-  return;
-});
-async function onCallbackQuery(callbackQuery) {
-  const action = callbackQuery.data;
-  const msg = callbackQuery.message;
-  const chat_id = msg.chat.id;
-  const opts = {
-    chat_id,
-    message_id: msg.message_id,
-  };
-  bot.sendMessage(chat_id, "Введите Сумму, Курс Юаниб Курс Доллара, Комиссия");
-}
