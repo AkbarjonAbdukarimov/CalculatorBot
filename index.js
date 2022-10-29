@@ -34,7 +34,7 @@ bot.on("message", (msg) => {
       if (message_id + 2 === msg.message_id) {
         if (Number(msg.text)) {
           const res = await calculate(Number(msg.text));
-          await bot.sendMessage(chat.id, res.toLocaleString());
+          await bot.sendMessage(chat.id, res.toLocaleString() + "$");
           return;
         }
         bot.sendMessage(
