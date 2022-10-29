@@ -29,7 +29,7 @@ bot.on("message", (msg) => {
     return;
   }
   if (text === "/ayirboshlash") {
-    bot.sendMessage(chat.id, "Qiymatni Kiriting");
+    bot.sendMessage(chat.id, "Yuan qiymatini kiriting");
     bot.on("message", async (msg) => {
       if (message_id + 2 === msg.message_id) {
         if (Number(msg.text)) {
@@ -52,7 +52,7 @@ bot.on("message", (msg) => {
     bot.sendMessage(
       chat.id,
       `30 000dan kop bolgan tranzaksiya uchun narx ${exchange.up}\n` +
-        "Yuanni Qiymatini kiriting:"
+        "Yangi almashtirish narxini kiriting:"
     );
     bot.on("message", (msg) => {
       if (message_id + 2 === msg.message_id) {
@@ -80,7 +80,7 @@ bot.on("message", (msg) => {
     bot.sendMessage(
       chat.id,
       `30 000dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
-        "Yuanni Qiymatini kiriting:"
+        "Yangi almashtirish narxini kiriting:"
     );
     bot.on("message", (msg) => {
       if (message_id + 2 === msg.message_id) {
