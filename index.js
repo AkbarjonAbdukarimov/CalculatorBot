@@ -52,7 +52,7 @@ bot.on("message", (msg) => {
     bot.sendMessage(
       chat.id,
       `30 000dan kop bolgan tranzaksiya uchun narx ${exchange.up}\n` +
-        "Yangi Narxni Kiriting:"
+        "Yuanni Qiymatini kiriting:"
     );
     bot.on("message", (msg) => {
       if (message_id + 2 === msg.message_id) {
@@ -65,7 +65,7 @@ bot.on("message", (msg) => {
         }
         bot.sendMessage(
           chat.id,
-          `Kuts  ${exchange.up}dan ${msg.text}ga ozgardi`
+          `Kurs  ${exchange.up}dan ${msg.text}ga ozgardi`
         );
         exchange.up = Number(msg.text);
         fs.writeFileSync("exchange.json", JSON.stringify(exchange));
@@ -80,7 +80,7 @@ bot.on("message", (msg) => {
     bot.sendMessage(
       chat.id,
       `30 000dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
-        "Yange Narxni Kiriting:"
+        "Yuanni Qiymatini kiriting:"
     );
     bot.on("message", (msg) => {
       if (message_id + 2 === msg.message_id) {
