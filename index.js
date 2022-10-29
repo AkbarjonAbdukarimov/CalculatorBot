@@ -13,32 +13,57 @@ bot.setMyCommands([
   { command: "/start", description: "Начальное приветствие" },
   { command: "/calculate", description: "Начать Калькуляцию" },
 ]);
+const calculate = async (input) => {
+  const usd = await getUsdPrice();
+
+  return ((input * usd) / exchange.price).toFixed(2);
+};
 bot.on("message", (msg) => {
   const { message_id, text, chat } = msg;
-  if (text === "/start")
-    switch (text) {
-      case "/start":
-        bot.sendMessage(chat.id, "Welcome to Calculator bot");
-        break;
-      case "/calculate":
-        bot.sendMessage(chat.id, "Введите значение:");
-        break;
-      case token:
-        bot.sendMessage(chat.id, "Введите Курс Юани:");
-        bot.on("message", (msg) => {
-          if (message_id + 2 === msg.message_id) {
-            bot.sendMessage(
-              chat.id,
-              `Курс был изменен с ${exchange.price} на ${msg.text}`
-            );
-            exchange.price = Number(msg.text);
-            fs.writeFileSync("exchange.json", JSON.stringify(exchange));
-            return;
-          }
+  if (text === "/start") {
+    bot.sendMessage(chat.id, "Welcome to Calculator bot");
+    return;
+  }
+  if (text === "/calculate") {
+    bot.sendMessage(chat.id, "Введите значение:");
+    bot.on("message", async (msg) => {
+      if (message_id + 2 === msg.message_id) {
+        if (Number(msg.text)) {
+          const res = await calculate(Number(msg.text));
+          await bot.sendMessage(chat.id, res.toLocaleString());
           return;
-        });
-        break;
-      // default:
-      //   bot.sendMessage(chat.id, "Command not found");
-    }
+        }
+      }
+
+      // bot.sendMessage(chat.id, `Команда Не Найдена!`);
+      // return;
+      return;
+    });
+    return;
+  }
+  if (text === token) {
+    bot.sendMessage(
+      chat.id,
+      ` Курс равен ${exchange.price}
+    Введите Курс Юани:`
+    );
+    bot.on("message", (msg) => {
+      if (message_id + 2 === msg.message_id) {
+        if (!Number(msg.text)) {
+          bot.sendMessage(chat.id, `Input must be a Number!!! Pleae Try Again`);
+          return;
+        }
+        bot.sendMessage(
+          chat.id,
+          `Курс был изменен с ${exchange.price} на ${msg.text}`
+        );
+        exchange.price = Number(msg.text);
+        fs.writeFileSync("exchange.json", JSON.stringify(exchange));
+        return;
+      }
+
+      return;
+    });
+    return;
+  }
 });
