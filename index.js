@@ -12,6 +12,7 @@ const bot = new TelegramBot(token, { polling: true });
 bot.setMyCommands([
   { command: "/start", description: "Kirish" },
   { command: "/ayirboshlash", description: "Ayirboshlash 💱" },
+  { command: "/kurs", description: "Ayirboshlash qiymati" },
 ]);
 const calculate = (input) => {
   let exchange = JSON.parse(fs.readFileSync("exchange.json"));
