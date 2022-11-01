@@ -9,13 +9,12 @@ const fs = require("fs");
 const axios = require("axios");
 const bot = new TelegramBot(token, { polling: true });
 
-let exchange = JSON.parse(fs.readFileSync("exchange.json"));
-
 bot.setMyCommands([
   { command: "/start", description: "Kirish" },
   { command: "/ayirboshlash", description: "Ayirboshlash 💱" },
 ]);
 const calculate = (input) => {
+  let exchange = JSON.parse(fs.readFileSync("exchange.json"));
   let ex = exchange.low;
   if (input >= 30000) {
     ex = exchange.up;
@@ -29,6 +28,7 @@ bot.on("message", (msg) => {
     return;
   }
   if (text === "/ayirboshlash") {
+    let exchange = JSON.parse(fs.readFileSync("exchange.json"));
     bot.sendMessage(chat.id, "Yuan qiymatini kiriting");
     bot.on("message", async (msg) => {
       if (message_id + 2 === msg.message_id) {
@@ -49,6 +49,7 @@ bot.on("message", (msg) => {
     return;
   }
   if (text === `${pass}up`) {
+    let exchange = JSON.parse(fs.readFileSync("exchange.json"));
     bot.sendMessage(
       chat.id,
       `30 000dan kop bolgan tranzaksiya uchun narx ${exchange.up}\n` +
@@ -77,6 +78,7 @@ bot.on("message", (msg) => {
     return;
   }
   if (text === `${pass}low`) {
+    let exchange = JSON.parse(fs.readFileSync("exchange.json"));
     bot.sendMessage(
       chat.id,
       `30 000dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
@@ -103,5 +105,13 @@ bot.on("message", (msg) => {
       return;
     });
     return;
+  }
+  if (text === "/kurs") {
+    let exchange = JSON.parse(fs.readFileSync("exchange.json"));
+    bot.sendMessage(
+      chat.id,
+      `30 000dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
+        `30 000dan kop bolgan tranzaksiya uchun narx ${exchange.up}`
+    );
   }
 });
