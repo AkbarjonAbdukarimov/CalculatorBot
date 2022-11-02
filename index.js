@@ -14,10 +14,9 @@ bot.setMyCommands([
   { command: "/ayirboshlash", description: "Ayirboshlash 💱" },
   { command: "/kurs", description: "Ayirboshlash qiymati" },
 ]);
-const calculate = (input) => {
-  let exchange = JSON.parse(fs.readFileSync("exchange.json"));
+const calculate = (input, exchange) => {
   let ex = exchange.low;
-  if (input >= 30000) {
+  if (input >= exchange.border) {
     ex = exchange.up;
   }
   return (input / ex).toFixed(2);
@@ -34,7 +33,7 @@ bot.on("message", (msg) => {
     bot.on("message", async (msg) => {
       if (message_id + 2 === msg.message_id) {
         if (Number(msg.text)) {
-          const res = await calculate(Number(msg.text));
+          const res = await calculate(Number(msg.text), exchange);
           await bot.sendMessage(chat.id, res.toLocaleString() + "$");
           return;
         }
@@ -111,8 +110,38 @@ bot.on("message", (msg) => {
     let exchange = JSON.parse(fs.readFileSync("exchange.json"));
     bot.sendMessage(
       chat.id,
-      `30 000dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
-        `30 000dan kop bolgan tranzaksiya uchun narx ${exchange.up}`
+      `${exchange.border}dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
+        `${exchange.border}dan kop bolgan tranzaksiya uchun narx ${exchange.up}`
     );
+  }
+  if (text === `${pass}exchange`) {
+    let exchange = JSON.parse(fs.readFileSync("exchange.json"));
+    bot.sendMessage(
+      chat.id,
+      `Hozirgi kurs ozgarish qiymati ${exchange.border}\n` +
+        "Yangi qiymatni kiriting:"
+    );
+    bot.on("message", (msg) => {
+      if (message_id + 2 === msg.message_id) {
+        if (!Number(msg.text)) {
+          bot.sendMessage(
+            chat.id,
+            `Iltimos Raqam Kiriting Va Boshqatan Urinib Koring`
+          );
+          return;
+        }
+        bot.sendMessage(
+          chat.id,
+          `Kurs ozgarish qiymati ${exchange.border}dan ${msg.text}ga ozgardi`
+        );
+        exchange.border = Number(msg.text);
+        fs.writeFileSync("exchange.json", JSON.stringify(exchange));
+
+        return;
+      }
+
+      return;
+    });
+    return;
   }
 });
