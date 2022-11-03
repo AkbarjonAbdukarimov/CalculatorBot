@@ -8,7 +8,14 @@ const pass = process.env.PASS;
 const fs = require("fs");
 const axios = require("axios");
 const bot = new TelegramBot(token, { polling: true });
-
+const getDate = () => {
+  const date = new Date();
+  const dateObj = new Date();
+  const month = dateObj.getUTCMonth() + 1; //months from 1-12
+  const day = dateObj.getUTCDate();
+  const year = dateObj.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+};
 bot.setMyCommands([
   { command: "/start", description: "Kirish" },
   { command: "/ayirboshlash", description: "Ayirboshlash 💱" },
@@ -69,6 +76,7 @@ bot.on("message", (msg) => {
           `Kurs  ${exchange.up}dan ${msg.text}ga ozgardi`
         );
         exchange.up = Number(msg.text);
+        exchange.date = getDate();
         fs.writeFileSync("exchange.json", JSON.stringify(exchange));
         return;
       }
@@ -98,6 +106,7 @@ bot.on("message", (msg) => {
           `Kurs ${exchange.low}dan ${msg.text}ga ozgardi`
         );
         exchange.low = Number(msg.text);
+        exchange.date = getDate();
         fs.writeFileSync("exchange.json", JSON.stringify(exchange));
         return;
       }
@@ -110,7 +119,8 @@ bot.on("message", (msg) => {
     let exchange = JSON.parse(fs.readFileSync("exchange.json"));
     bot.sendMessage(
       chat.id,
-      `${exchange.border}dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
+      `Kurs yangilangan sana ${exchange.date}\n` +
+        `${exchange.border}dan kam bolgan tranzaksiya uchun narx ${exchange.low}\n` +
         `${exchange.border}dan kop bolgan tranzaksiya uchun narx ${exchange.up}`
     );
   }
@@ -135,6 +145,7 @@ bot.on("message", (msg) => {
           `Kurs ozgarish qiymati ${exchange.border}dan ${msg.text}ga ozgardi`
         );
         exchange.border = Number(msg.text);
+
         fs.writeFileSync("exchange.json", JSON.stringify(exchange));
 
         return;
